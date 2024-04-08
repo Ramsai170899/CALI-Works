@@ -36,16 +36,16 @@ def check_inf(row, valuation_date):
     # Perform comparisons
     expiry_greater = expiry_date >= valuation_date
     if not expiry_greater:
-        conditions_failed.append("Expiry Date should be greater than Valuation Date")
+        conditions_failed.append(" Expiry Date should be >= Valuation Date ")
     
     effective_less_or_equal_valuation = coverage_effective_date <= valuation_date
     if not effective_less_or_equal_valuation:
-        conditions_failed.append("Coverage Effective date should be less than or equal to Valuation Date")
+        conditions_failed.append(" Coverage Effective date should be <= Valuation Date ")
 
     
     coverage_effective_less_expiry = coverage_effective_date < expiry_date
     if not coverage_effective_less_expiry:
-        conditions_failed.append("Coverage Effective date should be less than Expiry Date")
+        conditions_failed.append(" Coverage Effective date should be < Expiry Date ")
     
     return not conditions_failed, conditions_failed
 
@@ -105,7 +105,7 @@ def data_checks_boundary_values(row):
         conditions_failed.append("Policy Term is out of bounds")
     
     if ph_gender not in ['Female', 'Male']:
-        conditions_failed.append("PH Gender should be either Female or Male")
+        conditions_failed.append(" PH Gender should be either Female or Male ")
 
     return len(conditions_failed) == 0, conditions_failed
 
@@ -116,7 +116,7 @@ def perform_data_checks(input_dataset, valuation_date):
     duplicate_records = set()  # Using a set to store duplicate Policy/CoI Numbers
 
     # List of columns to check for empty values or 0
-    columns_to_check = ['Sum Assured', 'Premium', 'Policy Term_Month']  # Add your column names here
+    columns_to_check = ['Sum Assured', 'Premium', 'Policy Term_Month']  # Add column names here for null or NAN value check.
 
     # Check for duplicate Policy/CoI Numbers
     duplicate_policy_coi = input_dataset[input_dataset.duplicated(subset=['Policy/CoI Number'], keep=False)]
@@ -147,11 +147,11 @@ def perform_data_checks(input_dataset, valuation_date):
     if not failed_checks:
         print("\n\tAll data checks passed successfully!")
     else:
-        for check in failed_checks:
-            print(f"\nData check failed for COI {check[0]} || Status: {check[1]} || Reason: {check[2]} || Failed conditions: {check[3]}")
+        for index, check in enumerate(failed_checks, start=1):
+            print(f"\n{index} : Data check failed for COI {check[0]} || Status: {check[1]} || Reason: {check[2]} || Failed conditions: {check[3]}")
+
 
     return failed_checks
-
 
 def separate_csv_files_by_uin(input_dataset):
     output_directory = filedialog.askdirectory(title="Select Directory to Save CSV Files")
@@ -162,30 +162,6 @@ def separate_csv_files_by_uin(input_dataset):
             output_path = os.path.join(output_directory, f"{uin}.csv")
             group.to_csv(output_path, index=False)
             print(f"\tCSV file created for UIN {uin} at {output_path}")
-
-
-# def save_failed_records_to_csv(failed_checks, input_dataset):
-#     if failed_checks:
-#         response = messagebox.askyesno("Save Failed Records", "Do you want to save the failed records to a separate CSV file?")
-#         if response:
-#             print("\n\nSaving Failed records : ")
-#             output_path = filedialog.asksaveasfilename(defaultextension=".csv", filetypes=[("CSV files", "*.csv")], title="Save Failed Records")
-#             if output_path:
-#                 columns_to_save = ['MPH Code', 'Policy/CoI Number', 'UIN', 'Coverage Effective date', 'Expiry Date', 'maturity date', 'PH DOB', 'Valuation Date', 'Premium', 'Sum Assured', 'Policy Term_Month', 'Failed Conditions']
-#                 # Create a DataFrame for failed records with the specified columns
-#                 failed_dataset = pd.DataFrame(columns=columns_to_save)
-#                 with open(output_path, 'w', newline='') as csvfile:
-#                     csv_writer = csv.writer(csvfile)
-#                     csv_writer.writerow(columns_to_save)
-#                     for check in failed_checks:
-#                         index = input_dataset[input_dataset['Policy/CoI Number'] == check[0]].index[0]
-#                         row_data = input_dataset.loc[index, columns_to_save[:-1]].tolist()  # Exclude 'Failed Conditions' column
-#                         # Convert integer values to strings
-#                         row_data = [str(item) for item in row_data]
-#                         csv_writer.writerow(row_data + [', '.join(check[3])])
-#                 print(f"\tFailed records saved to {output_path}")
-
-
 
 def save_failed_records_to_csv(failed_checks, input_dataset):
     if failed_checks:
@@ -208,13 +184,12 @@ def save_failed_records_to_csv(failed_checks, input_dataset):
                     row_data.append(', '.join(check[3]))
                     failed_row = pd.Series(row_data, index=columns_to_save)
                     failed_dataset = pd.concat([failed_dataset, failed_row.to_frame().transpose()], ignore_index=True)
+                    
 
                 # Save the DataFrame to CSV
                 failed_dataset.to_csv(output_path, index=False)
+                print(f"\tTotal No of Failed records : {failed_dataset.shape[0]}")
                 print(f"\tFailed records saved to {output_path}")
-
-
-
 
 def get_selected_date():
     selected_date = cal.get_date()
