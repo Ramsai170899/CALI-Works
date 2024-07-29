@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}View Data{% endblock %}
+{% block content %}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-100">
+            <div class="card w-100">
+                <div class="card-header">
+                    <h1 class="card-title mb-0">Data Preview</h1>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ url_for('filter_data') }}">
+                        <div class="form-group">
+                            <label for="mph_code">Filter by MPH Code</label>
+                            <select class="form-control" id="mph_code" name="mph_code">
+                                <option value="">Select MPH Code</option>
+                                {% if mph_codes %}
+                                    {% for code in mph_codes %}
+                                        <option value="{{ code }}">{{ code }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="text-center"> <!-- Added text-center class -->
+                            <button type="submit" class="btn btn-primary">Select</button>
+                        </div>
+                    </form>
+                    {% if filtered_data %}
+                        <h2 class="mt-4">MPH Preview</h2>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered">
+                                {{ filtered_data|safe }}
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6 text-center"> <!-- Added text-center class -->
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Upload Data</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
