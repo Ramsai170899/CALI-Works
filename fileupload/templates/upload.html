@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload CSV</title>
+</head>
+<body>
+    <h1>Upload CSV File</h1>
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".csv" required>
+        <input type="submit" value="Upload">
+    </form>
+
+    <h2>Filter Data by MPH Code</h2>
+    <form method="post" action="/filter">
+        <select name="mph_code">
+            <option value="">Select MPH Code</option>
+            {% if mph_codes %}
+                {% for code in mph_codes %}
+                    <option value="{{ code }}">{{ code }}</option>
+                {% endfor %}
+            {% endif %}
+        </select>
+        <input type="submit" value="Filter">
+    </form>
+
+    {% if filtered_data %}
+        <h2>Filtered Data</h2>
+        <div>{{ filtered_data|safe }}</div>
+    {% endif %}
+</body>
+</html>
