@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Upload CSV{% endblock %}
+{% block content %}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-100">
+            <div class="card w-100">
+                <div class="card-header">
+                    <h1 class="card-title mb-0">Upload Summary CSV File</h1>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ url_for('upload_file') }}" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="file">Select a CSV file</label>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="file" name="file" accept=".csv" required>
+                                <label class="custom-file-label" for="file">Choose file</label>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Upload</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal for Success Message -->
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Upload Successful</h5>
+            </div>
+            <div class="modal-body">
+                Your CSV file has been uploaded successfully!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6 text-center">
+            <a href="{{ url_for('view_data') }}" class="btn btn-secondary">View Data</a>
+        </div>
+    </div>
+</div>
+
+{% if success %}
+<script>
+    $(document).ready(function() {
+        $('#successModal').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+</script>
+
+{% endif %}
+{% endblock %}
